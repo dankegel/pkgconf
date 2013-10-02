@@ -82,8 +82,13 @@ print_fragment(pkg_fragment_t *frag)
 
 	if (frag->type)
 		printf("-%c%s ", frag->type, frag->data);
-	else
+	else if (strncmp(frag->data, "-framework=", 10))
 		printf("%s ", frag->data);
+	else {
+		char *s = strchr(frag->data, '=');
+		if (s) *s = ' ';
+		printf("%s ", frag->data);
+	}
 }
 
 static void

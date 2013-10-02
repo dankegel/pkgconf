@@ -141,8 +141,17 @@ pkg_fragment_parse(pkg_list_t *list, pkg_list_t *vars, const char *value)
 
 	pkg_argv_split(repstr, &argc, &argv);
 
-	for (i = 0; i < argc; i++)
-		pkg_fragment_add(list, argv[i]);
+	for (i = 0; i < argc; i++) {
+		if ((i < argc-1) && !strncmp(argv[i], "-framework", 10)) {
+			/* must treat -framework X as a single word */
+			char buf[20000];
+			sprintf(buf, "%s=%s", argv[i], argv[i+1]);
+			pkg_fragment_add(list, buf);
+			i++;
+		} else {
+			pkg_fragment_add(list, argv[i]);
+		}
+	}
 
 	pkg_argv_free(argv);
 	free(repstr);
